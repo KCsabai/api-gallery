@@ -7,14 +7,16 @@ import {
   Param,
   Delete,
   UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { TransformInstanceInterceptor } from 'src/interceptors/TransformData.interceptor';
+import { TransformInterceptor } from 'src/interceptors/Transform.interceptor';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('users')
-@UseInterceptors(TransformInstanceInterceptor)
+@UseInterceptors(TransformInterceptor)
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
@@ -24,6 +26,7 @@ export class UsersController {
   }
 
   @Get()
+  // @UseGuards(JwtAuthGuard)
   findAll() {
     return this.usersService.findAll();
   }
