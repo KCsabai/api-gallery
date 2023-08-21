@@ -5,16 +5,17 @@ import {
   IsString,
   IsEmail,
   MaxLength,
+  IsEnum,
 } from 'class-validator';
 
 export class CreateUserDto {
   @IsOptional()
-  readonly id: string;
+  id: string;
 
   @IsString()
   @MaxLength(30)
   @IsNotEmpty()
-  readonly fullname: string;
+  fullname: string;
 
   @IsEmail()
   @IsNotEmpty()
@@ -24,6 +25,11 @@ export class CreateUserDto {
   @IsNotEmpty()
   password: string;
 
+  @IsEnum(['user', 'admin'])
+  @IsOptional()
+  role: string;
+
   @IsDate()
+  @IsOptional()
   createdDate: Date;
 }
