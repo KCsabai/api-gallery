@@ -29,6 +29,10 @@ export class CreateUserDto {
   @IsOptional()
   role: string;
 
+  @IsString()
+  @IsOptional()
+  refreshToken: string;
+
   @IsDate()
   @IsOptional()
   createdDate: Date;

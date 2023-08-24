@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 
 // for use env
 import config from './config/app.config';
@@ -6,7 +6,6 @@ import { ConfigModule } from '@nestjs/config';
 
 import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { JwtModule } from '@nestjs/jwt';
 import { join } from 'path/posix';
 
 import { MulterModule } from '@nestjs/platform-express';
@@ -24,11 +23,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     // for use mongodb
     MongooseModule.forRoot(process.env.MONGO_URI),
-    // for use jwt
-    JwtModule.register({
-      secret: process.env.SECRET_KEY,
-      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN },
-    }),
+
     // to save static files
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),

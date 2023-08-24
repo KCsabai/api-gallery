@@ -22,6 +22,9 @@ export class User extends BaseDBObject {
   @Prop({ default: 'user' })
   role: string;
 
+  @Prop()
+  refreshToken: string;
+
   @Expose()
   @Prop({ default: Date.now() })
   createdDate: Date;
