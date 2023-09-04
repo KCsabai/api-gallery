@@ -18,7 +18,7 @@ export class User extends BaseDBObject {
   @Prop({ required: true })
   password: string;
 
-  @Exclude()
+  @Expose()
   @Prop({ default: 'user' })
   role: string;
 

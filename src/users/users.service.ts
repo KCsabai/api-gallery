@@ -37,26 +37,31 @@ export class UsersService {
     return await this.userModel.findOne({ email }).exec();
   }
 
-  async findOne(id: string): Promise<UserDocument> {
+  async findOne(id: string): Promise<User> {
     const user = await this.userModel.findById(id).exec();
 
     if (!user) {
       throw new NotFoundException(`User #${id} not found`);
     }
 
-    return user;
+    return new User(user.toJSON());
   }
 
   async update(
     id: number | string,
     updateUserDto: UpdateUserDto,
-  ): Promise<UserDocument> {
-    return await this.userModel.findByIdAndUpdate(id, updateUserDto, {
-      new: false,
-    });
+  ): Promise<User> {
+    const user = await this.userModel
+      .findByIdAndUpdate(id, updateUserDto, {
+        new: false,
+      })
+      .exec();
+
+    return new User(user.toJSON());
   }
 
-  async remove(id: number): Promise<UserDocument> {
-    return await this.userModel.findByIdAndDelete(id);
+  async remove(id: number | string): Promise<User> {
+    const user = await this.userModel.findByIdAndDelete(id).exec();
+    return new User(user.toJSON());
   }
 }
