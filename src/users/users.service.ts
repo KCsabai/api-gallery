@@ -5,15 +5,19 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './schemas/user.schema';
+import { UserRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private userRepository: UserRepository,
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const existingUser = await this.userModel
-      .findOne({ email: createUserDto.email })
-      .exec();
+    const existingUser = await this.userRepository.findByEmail(
+      createUserDto.email,
+    );
 
     if (existingUser) {
       throw new HttpException(
@@ -23,45 +27,38 @@ export class UsersService {
     }
 
     createUserDto.password = await bcrypt.hash(createUserDto.password, 10);
-    const newUser = await new this.userModel(createUserDto);
-    newUser.save();
-    return new User(newUser.toJSON());
+    return this.userRepository.create(createUserDto);
   }
 
   async findAll(): Promise<User[]> {
-    const userList = await this.userModel.find().exec();
-    return userList.map((user) => new User(user.toJSON()));
+    const userList = await this.userRepository.findAll();
+    return userList;
   }
 
   async findByEmail(email: string): Promise<User> {
-    return await this.userModel.findOne({ email }).exec();
+    return this.userRepository.findByEmail(email);
   }
 
   async findOne(id: string): Promise<User> {
-    const user = await this.userModel.findById(id).exec();
+    const user = await this.userRepository.findById(id);
 
     if (!user) {
       throw new NotFoundException(`User #${id} not found`);
     }
 
-    return new User(user.toJSON());
+    return user;
   }
 
   async update(
     id: number | string,
     updateUserDto: UpdateUserDto,
   ): Promise<User> {
-    const user = await this.userModel
-      .findByIdAndUpdate(id, updateUserDto, {
-        new: false,
-      })
-      .exec();
+    const user = await this.userRepository.update(id, updateUserDto);
 
-    return new User(user.toJSON());
+    return user;
   }
 
   async remove(id: number | string): Promise<User> {
-    const user = await this.userModel.findByIdAndDelete(id).exec();
-    return new User(user.toJSON());
+    return await this.userRepository.delete(id);
   }
 }
