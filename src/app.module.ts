@@ -13,6 +13,7 @@ import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { ImagesModule } from './images/images.module';
 
 @Module({
   imports: [
@@ -26,20 +27,11 @@ import { AuthModule } from './auth/auth.module';
 
     // to save static files
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'),
-    }),
-    // for use multer to upload files
-    MulterModule.register({
-      storage: diskStorage({
-        destination: './public',
-        filename: (req, file, cb) => {
-          const ext = file.mimetype.split('/')[1];
-          cb(null, `${uuidv4()}-${Date.now()}.${ext}`);
-        },
-      }),
+      rootPath: join(__dirname, '..', 'public/uploads'),
     }),
     UsersModule,
     AuthModule,
+    ImagesModule,
   ],
 })
 export class AppModule {}
